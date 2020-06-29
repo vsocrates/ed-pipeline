@@ -1,1 +1,1 @@
--e git+git@github1vp.ynhh.org:DA/cchlib.git#egg=cchlib
+-e git+https://${GIT_USER}:${GIT_TOKEN}@cchteam.med.yale.edu/gitlab/computationalhealth/cchlib.git#egg=cchlib
