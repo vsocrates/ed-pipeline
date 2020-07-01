@@ -15,9 +15,12 @@ spark = SparkSession\
 
 spark.sparkContext.addPyFile("/home/cdsw/modules.zip")
 
+try:
+    from cchlib import copymerge
+except ImportError:
+    raise ImportError('Error importing cchlib module. Run build.py first')
 
-from cchlib import copymerge
-
+# Import and instantiate your code from modules here
 
 spark.stop()
 
