@@ -3,9 +3,9 @@
 Template for CDSW Projects
 
 1.  Create access token in gitlab
-2.  Create new empty repo in gitlab under phenotypes group
+2.  Create new empty repo in gitlab
 3.  Create CDSW project using git as starting option (or clone to local)
-4.  git url is https://\<user>:\<token>@cchteam.med.yale.edu/gitlab/computationalhealth/phenotypes/template.git
+4.  git url is https://\<user>:\<token>@cchteam.med.yale.edu/gitlab/computationalhealth/datasci/cdsw-template.git
 5.  Start session -> Terminal Access
 6.  git remote set-url origin \<yournewprojectrepo\>
 7.  git push --all
