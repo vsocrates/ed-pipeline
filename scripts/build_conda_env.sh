@@ -12,3 +12,6 @@ echo "Zipping Environment......"
 cd ~/.conda/envs
 zip -q -r ../../py3env.zip py3env
 cd ~
+
+conda deactivate
+pip3 install -r requirements.txt
