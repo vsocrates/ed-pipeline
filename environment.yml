@@ -1,6 +1,7 @@
 name: py3env
 dependencies:
   - python>=3.6,<3.7
+  - pyarrow<0.15
   - pip
   - pip:
     - -r requirements.txt
