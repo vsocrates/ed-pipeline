@@ -1,0 +1,56 @@
+Demographics:
+
+    Organized at visit_id level:
+
+        Variables desired:
+            - Age at visit DONE
+            - Birthday DONE
+            - Gender DONE
+            - Race DONE
+            - Ethnicity DONE
+            - Insurance at visit DONE
+            - Home city, state, zip, country at visit
+            - Visit Start DONE
+            - Visit End DONE
+            - Place of service DONE
+
+
+    Organized at person level:
+
+        Variables desired:
+            - Up to date age DONE
+            - Birthday DONE
+            - Gender DONE
+            - Race DONE
+            - Ethnicity DONE
+            - Current Insurance DONE
+            - Current home city, state, zip, country 
+            
+    
+
+
+
+Selection criteria:
+
+    - Numerical variables select for range or value
+    - Catagorical variables select for/against a set of possibilities
+    
+    -Prompt you for selection choices?
+
+
+
+Quality Checks:
+    
+    - Detect which column is which type (ie numberical vs catagorical)?
+
+    - Null % for each column
+    
+    - Numerical columns:
+        - T-test comparison vs representative sample of dataset
+        - Table showing column distribution
+    
+    - Catagorical columns:
+        - Chi-square comparison vs representative sample of dataset
+        - Table showing percentage of each column value and absolute count  
+    
+    
