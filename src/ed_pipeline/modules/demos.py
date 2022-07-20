@@ -1,14 +1,10 @@
 import datetime
-import json
 import math
-import os
 from os import walk
-import sys
 from typing import Mapping, Sequence, Tuple
 
-import pyspark
 from pyspark import sql
-from pyspark.sql import SparkSession, SQLContext
+from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.functions import col, datediff, lit, to_date, when
 from src.ed_pipeline.utils import helpful_functions
