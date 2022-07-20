@@ -3,15 +3,13 @@ import sys
 import time
 from typing import List, Mapping
 
+from pyspark import sql
+from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType
-from pyspark.sql import SparkSession
-from pyspark import sql
 
-def get_null_perc(spark: SparkSession, 
-                  df:sql.DataFrame, 
-                  null_cols: List[str] 
-) -> sql.DataFrame:
+
+def get_null_perc(spark: SparkSession, df: sql.DataFrame, null_cols: List[str]) -> sql.DataFrame:
     """Get null/empty percentage for columns
 
     Args:
@@ -41,9 +39,7 @@ def get_null_perc(spark: SparkSession,
     return resultdf
 
 
-def get_summary_numeric(df: sql.DataFrame,
-                        numeric_cols: List[str]
-) -> sql.DataFrame:
+def get_summary_numeric(df: sql.DataFrame, numeric_cols: List[str]) -> sql.DataFrame:
     """Get Summary for numeric columns
 
     Args:
@@ -57,9 +53,8 @@ def get_summary_numeric(df: sql.DataFrame,
     return df.select(numeric_cols).summary()
 
 
-def get_distinct_counts(spark: SparkSession,
-                        df: sql.DataFrame,
-                        aggregate_cols: List[str]
+def get_distinct_counts(
+    spark: SparkSession, df: sql.DataFrame, aggregate_cols: List[str]
 ) -> sql.DataFrame:
     """Get distinct count for columns
 
@@ -89,9 +84,8 @@ def get_distinct_counts(spark: SparkSession,
     return resultdf
 
 
-def get_distribution_counts(spark: SparkSession,
-                            df: sql.DataFrame,
-                            aggregate_cols: List[str]
+def get_distribution_counts(
+    spark: SparkSession, df: sql.DataFrame, aggregate_cols: List[str]
 ) -> List[sql.DataFrame]:
     """Get Distribution Counts for columns
 
@@ -110,9 +104,8 @@ def get_distribution_counts(spark: SparkSession,
     return result
 
 
-def get_mismatch_perc(spark: SparkSession,
-                      df: sql.DataFrame,
-                      data_quality_cols_regex: Mapping[str, str]
+def get_mismatch_perc(
+    spark: SparkSession, df: sql.DataFrame, data_quality_cols_regex: Mapping[str, str]
 ) -> sql.DataFrame:
     """Get Mismatch Percentage for columns
 

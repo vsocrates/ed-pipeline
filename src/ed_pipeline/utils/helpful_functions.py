@@ -1,32 +1,30 @@
+from collections.abc import Sequence
 import json
 import os
 from os import walk
 import sys
-from collections.abc import Sequence
 
-from utils.helper_variables import *
 import pyspark
-from pyspark import SparkConf
+from pyspark import SparkConf, sql
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
-from pyspark import sql
+from utils.helper_variables import *
 
-def get_spark_session(app_name: str, 
-                      conf: SparkConf
-) -> SparkSession:
+
+def get_spark_session(app_name: str, conf: SparkConf) -> SparkSession:
     """Begins a spark session for pyspark.
-    
-    Takes in an empty SparkConf and sets values according to the local Spark defaults. It then returns a SparkSession. 
+
+    Takes in an empty SparkConf and sets values according to the local Spark defaults. It then returns a SparkSession.
 
         Typical usage example:
         spark = get_spark_session("test", SparkConf())
-    
+
     Args:
         app_name: str of spark session name
         conf: SparkConf
 
     Returns:
-        A SparkSession with the specified app_name and config. Returns the current one if one already exists, or creates it otherwise. 
+        A SparkSession with the specified app_name and config. Returns the current one if one already exists, or creates it otherwise.
     """
     with open("/home/jupyter/config/spark-defaults.json") as f:
         config = json.load(f)
@@ -42,13 +40,10 @@ def get_spark_session(app_name: str,
     return SparkSession.builder.appName(app_name).config(conf=conf).getOrCreate()
 
 
-def merge_files(path: str, 
-                spark: SparkSession, 
-                show: bool = True
-) -> sql.DataFrame:
-    """Combines all files into one pyspark DataFrame. 
-    
-    Merges all pyspark DataFrames, given a folder path and the SparkSession. 
+def merge_files(path: str, spark: SparkSession, show: bool = True) -> sql.DataFrame:
+    """Combines all files into one pyspark DataFrame.
+
+    Merges all pyspark DataFrames, given a folder path and the SparkSession.
     Loops through each folder of data containing multiple files of type .parquet.
 
     Args:
@@ -73,18 +68,15 @@ def merge_files(path: str,
     return df
 
 
-def merge_dfs(column: str, 
-              path: str,
-              spark: SparkSession,
-              merge_type: str = "outer",
-            dfs: Sequence[str] = []
+def merge_dfs(
+    column: str, path: str, spark: SparkSession, merge_type: str = "outer", dfs: Sequence[str] = []
 ):
     """Combines multiple DataFrames on a given shared column.
 
 
     Merges all pyspark DataFrames in `path` that contain `column` over that column. The function requires
-    the column to merge on, the OMOP data base path, the SparkSession, and a merge type. 
-    Also takes in a list of DataFrame names, if not all DataFrames should be used in the merge. 
+    the column to merge on, the OMOP data base path, the SparkSession, and a merge type.
+    Also takes in a list of DataFrame names, if not all DataFrames should be used in the merge.
 
     Args:
         column: shared column for files to be combined on will find all possible dataframes in the entirety of OMOP data that contain that column
