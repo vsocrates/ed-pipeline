@@ -5,7 +5,7 @@ theme:
   # By default, fonts are pulled from Google on the Internet. To support offline usage, this is
   # disabled.
   highlightjs: true
-  font: false
+  font: true
   palette:
     scheme: slate
     primary: green
@@ -36,7 +36,7 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/johnthagen/python-blueprint
+      link: https://cchteam.med.yale.edu/gitlab/computational-emergency-medicine/ed-pipeline
 # This is needed to allow links to work when opened from the file system.
 use_directory_urls: false
 plugins:

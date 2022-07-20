@@ -1,7 +1,28 @@
+image: python:3.9
+
 pages:
   stage: deploy
+  before_script:
+    - pip install -r requirements.txt
+    # - pip install mkdocs ## install MkDocs.
+    # - pip install mkdocs-material ## install the theme.
   script:
-  - mkdocs build --strict --verbose
+  - nox -s docs
   artifacts:
     paths:
     - public
+
+
+
+
+  # script:
+  #   - cd ./src/doc-project
+  #   - mkdocs build ## built the site.
+  #   - mv site ../../public
+
+  # only:
+  #   - master 
+  #   - main
+  # script:
+  #   - pip install mkdocs-material
+  #   - mkdocs build --site-dir public
