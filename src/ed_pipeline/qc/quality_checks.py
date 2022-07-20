@@ -1,18 +1,23 @@
 import datetime
 import sys
 import time
+from typing import List, Mapping
 
 from pyspark.sql import functions as F
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType
+from pyspark.sql import SparkSession
+from pyspark import sql
 
-
-def get_null_perc(spark, df, null_cols):
+def get_null_perc(spark: SparkSession, 
+                  df:sql.DataFrame, 
+                  null_cols: List[str] 
+) -> sql.DataFrame:
     """Get null/empty percentage for columns
 
     Args:
-        spark (Spark): SparkSession object
-        df (DataFrame): dataframe to perform null/empty analysis on
-        null_cols (List): list of columns that need to be considered for analysis
+        spark: SparkSession object
+        df: dataframe to perform null/empty analysis on
+        null_cols: list of columns that need to be considered for analysis
 
     Returns:
         DataFrame: dataframe with null check analysis
@@ -36,7 +41,9 @@ def get_null_perc(spark, df, null_cols):
     return resultdf
 
 
-def get_summary_numeric(df, numeric_cols):
+def get_summary_numeric(df: sql.DataFrame,
+                        numeric_cols: List[str]
+) -> sql.DataFrame:
     """Get Summary for numeric columns
 
     Args:
@@ -50,7 +57,10 @@ def get_summary_numeric(df, numeric_cols):
     return df.select(numeric_cols).summary()
 
 
-def get_distinct_counts(spark, df, aggregate_cols):
+def get_distinct_counts(spark: SparkSession,
+                        df: sql.DataFrame,
+                        aggregate_cols: List[str]
+) -> sql.DataFrame:
     """Get distinct count for columns
 
     Args:
@@ -79,7 +89,10 @@ def get_distinct_counts(spark, df, aggregate_cols):
     return resultdf
 
 
-def get_distribution_counts(spark, df, aggregate_cols):
+def get_distribution_counts(spark: SparkSession,
+                            df: sql.DataFrame,
+                            aggregate_cols: List[str]
+) -> List[sql.DataFrame]:
     """Get Distribution Counts for columns
 
     Args:
@@ -88,23 +101,25 @@ def get_distribution_counts(spark, df, aggregate_cols):
         aggregate_cols (List): list of columns that need to be considered for analysis
 
     Returns:
-        Array: Array of objects with dataframes
+        Returns a list of DataFrames with the distribution counts for each column
     """
     result = []
     for i in aggregate_cols:
         result.append(df.groupby(F.col(i)).count().sort(F.col("count").desc()))
-    ###
 
     return result
 
 
-def get_mismatch_perc(spark, df, data_quality_cols_regex):
+def get_mismatch_perc(spark: SparkSession,
+                      df: sql.DataFrame,
+                      data_quality_cols_regex: Mapping[str, str]
+) -> sql.DataFrame:
     """Get Mismatch Percentage for columns
 
     Args:
-        spark (Spark): SparkSession object
-        df (DataFrame): dataframe to perform null/empty analysis on
-        data_quality_cols_regex (Dictionary): Dictionary of columns/regex-expression for data quality analysis
+        spark: SparkSession object
+        df: dataframe to perform null/empty analysis on
+        data_quality_cols_regex: Dictionary of columns/regex-expression for data quality analysis
 
     Returns:
         DataFrame: DataFrame with data quality analysis

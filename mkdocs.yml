@@ -4,6 +4,7 @@ theme:
   name: material
   # By default, fonts are pulled from Google on the Internet. To support offline usage, this is
   # disabled.
+  highlightjs: true
   font: false
   palette:
     scheme: slate
@@ -62,11 +63,11 @@ plugins:
   # incorrect URLs.
 #  - htmlproofer:
 #      raise_error: True
-site_name: fact
-copyright: Copyright &copy; 2018-2022 John Hagen
+site_name: ed-pipline
+copyright: Copyright &copy; 2018-2022 DECILE
 # GitHub Specific Configuration.
-repo_name: python-blueprint
-repo_url: https://github.com/johnthagen/python-blueprint
+repo_name: ed-pipeline
+repo_url: https://cchteam.med.yale.edu/gitlab/computational-emergency-medicine/ed-pipeline
 edit_uri: edit/master/docs/user_guide/docs/
 nav:
   - index.md

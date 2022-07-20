@@ -1,70 +1,24 @@
-# `fact` User Guide
+# `ED-pipeline` User Guide
+
 
 !!! info
 
-    For more information on how this was built and deployed, as well as other Python best
-    practices, see [`python-blueprint`](https://github.com/johnthagen/python-blueprint).
-
-!!! info
-
-    This user guide is purely an illustrative example that shows off several features of 
-    [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) and included Markdown
-    extensions.
+    This is a work in progress. 
 
 ## Installation
 
-First, [install Poetry](https://python-poetry.org/docs/#installation):
+First, install the code with `pip`. 
 
 === "Linux/macOS"
 
     ```bash
-    curl -sSL https://install.python-poetry.org | python3 -
+    pip install -r requirements.txt
     ```
-
-=== "Windows"
-
-    ```powershell
-    (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
-    ```
-
-Then install the `fact` package and its dependencies:
-
-```bash
-poetry install
-```
-
-Activate the virtual environment created automatically by Poetry:
-
-```bash
-poetry shell
-```
 
 ## Quick Start
 
-To use `fact` within your project, import the `factorial` function and execute it like:
+To use `ed-pipeline`, run the `cli.py` and specify the required modules and config settings. We are currently enabling AirFlow usage with dags. 
 
-```python
-from fact.lib import factorial
-
-# (1)
-assert factorial(3) == 6
+```bash
+python cli.py --option1=A --option2=B etc.
 ```
-
-1. This assertion will be `True`
-
-!!! tip
-
-    Within PyCharm, use ++tab++ to auto-complete suggested imports while typing.
-
-### Expected Results
-
-<div class="center-table" markdown>
-
-| Input | Output |
-|:-----:|:------:|
-|   1   |   1    |
-|   2   |   2    |
-|   3   |   6    |
-|   4   |   24   | 
-
-</div>
