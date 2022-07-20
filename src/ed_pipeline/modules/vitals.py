@@ -1,13 +1,29 @@
 from typing import List
-from pyspark.sql import functions as F
-from pyspark.sql import SparkSession
-from pyspark import sql
-from pyspark.sql.functions import col
 
+from pyspark import sql
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+from pyspark.sql.functions import col
 from src.ed_pipeline.utils.helpful_functions import merge_files
 
-def ed_vitals_pull(spark: SparkSession, base_url: str, vitals_codes: List[int] = [3025315, 3012888, 3032652, 3027018, 3027598, 3024171, 3004249, 3026258, 3020891], 
-rand_sample_size: int=0, merge_with:sql.DataFrame=None) -> Tuple[sql.DataFrame, sql.DataFrame]:
+
+def ed_vitals_pull(
+    spark: SparkSession,
+    base_url: str,
+    vitals_codes: List[int] = [
+        3025315,
+        3012888,
+        3032652,
+        3027018,
+        3027598,
+        3024171,
+        3004249,
+        3026258,
+        3020891,
+    ],
+    rand_sample_size: int = 0,
+    merge_with: sql.DataFrame = None,
+) -> Tuple[sql.DataFrame, sql.DataFrame]:
     """Extracts vitals from OMOP dataset.
 
     Extracts data with list of `vitals_codes` relevant to vitals and outputs two pyspark DataFrames,
@@ -28,7 +44,7 @@ rand_sample_size: int=0, merge_with:sql.DataFrame=None) -> Tuple[sql.DataFrame, 
     # First and Last vitals for the visit and keep time for each measurement
 
     vitals = merge_files(f"{base_url}/measurement", spark, show=False)
-    measurement = vitals.alias('measurement')
+    measurement = vitals.alias("measurement")
     concept = merge_files(f"{base_url}/concept", spark, show=False)
     vitals = vitals.join(concept, vitals.measurement_concept_id == concept.concept_id)
 
