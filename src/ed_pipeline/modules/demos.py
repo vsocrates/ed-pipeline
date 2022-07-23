@@ -7,7 +7,7 @@ from pyspark import sql
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.functions import col, datediff, lit, to_date, when
-from src.ed_pipeline.utils import helpful_functions
+from ed_pipeline.utils import helpful_functions
 
 
 def numerical_column_selection(
@@ -70,7 +70,7 @@ def demographic_pull(
         visit_date: filter by visit_date range
         visit_location: filter by visit location dict
         care_site: filter by care site dict
-        rand_sample_size: size of data subset
+        rand_sample_size: size of random subset for distribution comparison
 
     Returns:
         A tuple of the full data and the randomly subsetted data (full, subset)

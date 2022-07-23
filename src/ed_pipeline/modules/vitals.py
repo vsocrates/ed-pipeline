@@ -1,10 +1,10 @@
-from typing import List
+from typing import List, Tuple
 
 from pyspark import sql
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.functions import col
-from src.ed_pipeline.utils.helpful_functions import merge_files
+from ed_pipeline.utils.helpful_functions import merge_files
 
 
 def ed_vitals_pull(
@@ -49,7 +49,7 @@ def ed_vitals_pull(
     vitals = vitals.join(concept, vitals.measurement_concept_id == concept.concept_id)
 
     # TODO: Figure out why this was done like this, fixed above with alias
-    vitals = measurement.filter(col("concept_id").isin(codes))
+    vitals = measurement.filter(col("concept_id").isin(vitals_codes))
     main_df = vitals.groupby("visit_occurrence_id", "measurement_source_value").agg(
         F.max("value_as_number").alias("Max_value"),
         F.min("value_as_number").alias("Min_value"),
