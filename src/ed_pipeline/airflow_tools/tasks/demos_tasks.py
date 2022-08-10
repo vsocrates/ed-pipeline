@@ -44,8 +44,10 @@ def demos_pull_task(
         rand_sample_size,
     )
 
-    demos_data.write.mode("overwrite").parquet(f"{output_path}/demos_data.parquet")
-    comp_data.write.mode("overwrite").parquet(f"{output_path}/demos_comp_data.parquet")
+    demos_data.write.mode("overwrite").parquet(
+        f"{output_path}/demos_data.parquet")
+    comp_data.write.mode("overwrite").parquet(
+        f"{output_path}/demos_comp_data.parquet")
     # spark.stop()
 
     # return {"main":demos_data, "comp":comp_data}

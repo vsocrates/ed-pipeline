@@ -83,13 +83,16 @@ def read_in_targets():
 
 def get_tables():
     # Get required tables
-    diagnosis_extract = spark.read.parquet("{}diagnosis_extract".format(base_data_loc))
+    diagnosis_extract = spark.read.parquet(
+        "{}diagnosis_extract".format(base_data_loc))
     medications = spark.read.parquet("{}medications".format(base_data_loc))
-    measure_extract = spark.read.parquet("{}measure_extract".format(base_data_loc))
+    measure_extract = spark.read.parquet(
+        "{}measure_extract".format(base_data_loc))
     medications_classification = spark.read.parquet(
         "{}medication_classification".format(base_data_loc)
     )
-    urine_toxicology = spark.read.parquet("{}urine_toxicology".format(base_data_loc))
+    urine_toxicology = spark.read.parquet(
+        "{}urine_toxicology".format(base_data_loc))
     blood_culture = spark.read.parquet("{}blood_culture".format(base_data_loc))
     alcohol = spark.read.parquet("{}alcohol".format(base_data_loc))
     VO = spark.read.parquet(opioid_phenotyping_omop["visit_occurence"])
@@ -134,7 +137,8 @@ def get_tables():
     )
     # Fix columns to contain special prefix
     CC = CC.select(
-        [c if c == "visit_occurrence_id" else col(c).alias("CCTBL_" + c) for c in CC.columns]
+        [c if c == "visit_occurrence_id" else col(
+            c).alias("CCTBL_" + c) for c in CC.columns]
     )
     # Maybe refactor to function?
     # Lets try to get all levels of icd codes there are a total of 6 characters for icd10
@@ -145,7 +149,8 @@ def get_tables():
             .withColumn(
                 "condition_source_value",
                 when(
-                    col("condition_source_value").rlike("[A-TV-Z][0-9][0-9AB]\.?[0-9A-TV-Z]{0,4}"),
+                    col("condition_source_value").rlike(
+                        "[A-TV-Z][0-9][0-9AB]\.?[0-9A-TV-Z]{0,4}"),
                     substring(upper(col("condition_source_value")), 1, i),
                 ).otherwise(upper(col("condition_source_value"))),
             )
@@ -170,12 +175,14 @@ def get_tables():
             curr_cols = el.columns
             del prev_cols[prev_cols.index("visit_occurrence_id")]
             select_cols = list(set(curr_cols) - set(prev_cols))
-            DE = DE.join(el.select([x for x in select_cols]), "visit_occurrence_id", "left")
+            DE = DE.join(el.select([x for x in select_cols]),
+                         "visit_occurrence_id", "left")
 
     # this dot (.) is problematic, cant call without backticks replacing with underscore
     DE = DE.toDF(*(c.replace(".", "_") for c in DE.columns))
     DE = DE.select(
-        [c if c == "visit_occurrence_id" else col(c).alias("DETBL_" + c) for c in DE.columns]
+        [c if c == "visit_occurrence_id" else col(
+            c).alias("DETBL_" + c) for c in DE.columns]
     )
     # Join Chief complaint with the Diagnosis Extract
     DE_new = DE.join(CC, "visit_occurrence_id", "left")
@@ -206,11 +213,13 @@ def get_tables():
             curr_cols = el.columns
             del prev_cols[prev_cols.index("visit_occurrence_id")]
             select_cols = list(set(curr_cols) - set(prev_cols))
-            MED = MED.join(el.select([x for x in select_cols]), "visit_occurrence_id", "left")
+            MED = MED.join(
+                el.select([x for x in select_cols]), "visit_occurrence_id", "left")
 
     UT = (
         urine_toxicology.where(
-            (col("visit_occurrence_id").isin(VO_ids)) & (col("isSubstancePositive") == "True")
+            (col("visit_occurrence_id").isin(VO_ids)) & (
+                col("isSubstancePositive") == "True")
         )
         .select("visit_occurrence_id", "Substance", "isSubstancePositive")
         .withColumn("count", lit(1))
@@ -222,7 +231,8 @@ def get_tables():
 
     BC = (
         blood_culture.where(
-            (col("visit_occurrence_id").isin(VO_ids)) & (col("no_growth_in_specimen") == "False")
+            (col("visit_occurrence_id").isin(VO_ids)) & (
+                col("no_growth_in_specimen") == "False")
         )
         .select("visit_occurrence_id", "culture_growth")
         .withColumn("count", lit(1))
@@ -234,7 +244,8 @@ def get_tables():
 
     ACH = (
         alcohol.where(
-            (col("visit_occurrence_id").isin(VO_ids)) & (col("alcohol_positive") == "True")
+            (col("visit_occurrence_id").isin(VO_ids)) & (
+                col("alcohol_positive") == "True")
         )
         .select("visit_occurrence_id", "alcohol_positive")
         .withColumn("count", lit(1))
@@ -245,23 +256,29 @@ def get_tables():
         .withColumnRenamed("sum(count)", "alcohol_positive")
     )
 
-    ME = measure_extract.where(col("visit_occurrence_id").isin(VO_ids)).fillna(0)
+    ME = measure_extract.where(
+        col("visit_occurrence_id").isin(VO_ids)).fillna(0)
 
     # change the alias for rest of the tables
     MED_new = MED.select(
-        [c if c == "visit_occurrence_id" else col(c).alias("MEDTBL_" + c) for c in MED.columns]
+        [c if c == "visit_occurrence_id" else col(
+            c).alias("MEDTBL_" + c) for c in MED.columns]
     )
     ME_new = ME.select(
-        [c if c == "visit_occurrence_id" else col(c).alias("METBL_" + c) for c in ME.columns]
+        [c if c == "visit_occurrence_id" else col(
+            c).alias("METBL_" + c) for c in ME.columns]
     )
     UT_new = UT.select(
-        [c if c == "visit_occurrence_id" else col(c).alias("UTTBL_" + c) for c in UT.columns]
+        [c if c == "visit_occurrence_id" else col(
+            c).alias("UTTBL_" + c) for c in UT.columns]
     )
     BC_new = BC.select(
-        [c if c == "visit_occurrence_id" else col(c).alias("BCTBL_" + c) for c in BC.columns]
+        [c if c == "visit_occurrence_id" else col(
+            c).alias("BCTBL_" + c) for c in BC.columns]
     )
     ACH_new = ACH.select(
-        [c if c == "visit_occurrence_id" else col(c).alias("ACHTBL_" + c) for c in ACH.columns]
+        [c if c == "visit_occurrence_id" else col(
+            c).alias("ACHTBL_" + c) for c in ACH.columns]
     )
 
     # .join(ME_new, 'visit_occurrence_id', 'left') \ #Remove vitals/measurements
@@ -274,7 +291,8 @@ def get_tables():
     )
 
     # Clean up column names
-    res = res.select([col(c).alias(re.sub(r"[ ,;{}()\n\t=]+", "", c)) for c in res.columns])
+    res = res.select([col(c).alias(re.sub(r"[ ,;{}()\n\t=]+", "", c))
+                     for c in res.columns])
     res = res.fillna(0)
 
     # If we generate a new DF with the small subset of VO_ids we just put it into a df
@@ -313,7 +331,8 @@ def get_best_features(num_feats):
         from sklearn.linear_model import LogisticRegression
 
         rfe_selector = RFE(
-            estimator=LogisticRegression(penalty="l1", C=0.3, solver="liblinear"),
+            estimator=LogisticRegression(
+                penalty="l1", C=0.3, solver="liblinear"),
             n_features_to_select=num_feats,
             step=10,
             verbose=5,
@@ -374,7 +393,8 @@ def get_best_features(num_feats):
         shap_sum = np.abs(shap_values).mean(axis=0)
         importance_df = pd.DataFrame([X.columns.tolist(), shap_sum.tolist()]).T
         importance_df.columns = ["column_name", "shap_importance"]
-        importance_df = importance_df.sort_values("shap_importance", ascending=False)
+        importance_df = importance_df.sort_values(
+            "shap_importance", ascending=False)
         shap_feature = importance_df["column_name"][0:40].tolist()
         print(shap_feature)
         shap_support = X.columns.isin(shap_feature)
@@ -416,7 +436,8 @@ def read_best_features(num_feats):
     top_n = num_feats
     ICD_LEVEL = "ALL"
     ATC_LEVEL = "ALL"
-    targets = list(set(df_kevin.columns.tolist()) - set(["visit_occurrence_id"]))
+    targets = list(set(df_kevin.columns.tolist()) -
+                   set(["visit_occurrence_id"]))
     feature_list_dict = {}
     feature_df_dict = {}
     for target in targets:
@@ -466,7 +487,8 @@ def human_read_feats(f):
             atc_code = feat.split("_")[1]
             if atc_code in ATC["ATC_code"].values:
                 feats[idx] = (
-                    "MEDTBL_" + ATC[ATC["ATC_code"] == atc_code]["Preferred Label"].values[0]
+                    "MEDTBL_" + ATC[ATC["ATC_code"] ==
+                                    atc_code]["Preferred Label"].values[0]
                 )
     return feats
 
@@ -504,7 +526,8 @@ def plot_calibration_curve(
             prob_pos = clf.predict_proba(X_test)[:, 1]
         else:  # use decision function
             prob_pos = clf.decision_function(X_test)
-            prob_pos = (prob_pos - prob_pos.min()) / (prob_pos.max() - prob_pos.min())
+            prob_pos = (prob_pos - prob_pos.min()) / \
+                (prob_pos.max() - prob_pos.min())
 
         clf_score = brier_score_loss(y_test, prob_pos, pos_label=y_test.max())
         print("%s:" % name)
@@ -524,7 +547,8 @@ def plot_calibration_curve(
             label="%s (%1.3f)" % (name, clf_score),
         )
 
-        ax2.hist(prob_pos, range=(0, 1), bins=10, label=name, histtype="step", lw=2)
+        ax2.hist(prob_pos, range=(0, 1), bins=10,
+                 label=name, histtype="step", lw=2)
 
     ax1.set_ylabel("Fraction of positives")
     ax1.set_ylim([-0.05, 1.05])
@@ -552,7 +576,8 @@ def plot_PR_curve(y_test, probs, target):
     pr_auc = auc(recall, precision)
 
     plt.title(
-        "PR_Curve_AUC_{}_target_{}_ICD_{}_ATC_{}".format(num_feats, target, ICD_LEVEL, ATC_LEVEL)
+        "PR_Curve_AUC_{}_target_{}_ICD_{}_ATC_{}".format(
+            num_feats, target, ICD_LEVEL, ATC_LEVEL)
     )
     plt.plot(recall, precision, "b", label="AUC = %0.2f" % pr_auc)
     # calculate the no skill line as the proportion of the positive class
@@ -560,7 +585,8 @@ def plot_PR_curve(y_test, probs, target):
         y_test
     )  # Essentially the fraction of positive classes/total number of examples
     # plot the no skill precision-recall curve
-    plt.plot([0, 1], [no_skill, no_skill], "r--", label="No Skill = %0.2f" % no_skill)
+    plt.plot([0, 1], [no_skill, no_skill], "r--",
+             label="No Skill = %0.2f" % no_skill)
     plt.legend(loc="lower right")
     plt.xlim([0, 1])
     plt.ylim([0, 1])
@@ -582,7 +608,8 @@ def plot_ROC_curve(y_test, probs, target):
     import matplotlib.pyplot as plt
 
     plt.title(
-        "ROC_Curve_AUC_{}_target_{}_ICD_{}_ATC_{}".format(num_feats, target, ICD_LEVEL, ATC_LEVEL)
+        "ROC_Curve_AUC_{}_target_{}_ICD_{}_ATC_{}".format(
+            num_feats, target, ICD_LEVEL, ATC_LEVEL)
     )
     plt.plot(fpr, tpr, "b", label="AUC = %0.2f" % roc_auc)
     plt.legend(loc="lower right")
@@ -707,7 +734,8 @@ if __name__ == "__main__":
 
     # Zip Modules
     os.system("zip modules.zip -r modules/*.py")
-    spark = SparkSession.builder.appName("OpioidPhenotyping").enableHiveSupport().getOrCreate()
+    spark = SparkSession.builder.appName(
+        "OpioidPhenotyping").enableHiveSupport().getOrCreate()
 
     spark.sparkContext.addPyFile("/home/cdsw/modules.zip")
 
@@ -735,7 +763,8 @@ if __name__ == "__main__":
     # df = pd.read_csv('opioid_feats_df.csv', index_col=0, parse_dates=['visit_end_datetime'])
 
     # get age with reference to the visit end date
-    df["age"] = df["visit_end_datetime"].apply(lambda x: x.year) - df["BirthYear"]
+    df["age"] = df["visit_end_datetime"].apply(
+        lambda x: x.year) - df["BirthYear"]
     del df["BirthYear"]
     del df["visit_end_datetime"]
     # Change column names in df
@@ -757,7 +786,8 @@ if __name__ == "__main__":
             + [c for c in df.columns.tolist() if "ACHTBL_" in c]
         )
     )
-    df[colsToBinarize] = df[colsToBinarize].applymap(lambda x: 1 if x >= 1 else 0)
+    df[colsToBinarize] = df[colsToBinarize].applymap(
+        lambda x: 1 if x >= 1 else 0)
 
     # remove ICD codes that show up less than 100 times
     ICDtoDrop = [

@@ -1,22 +1,22 @@
+from ed_pipeline.modules import vitals
+from ed_pipeline.airflow_tools.tasks import common, demos_tasks, vitals_tasks
+from airflow.utils import dates
+from airflow.operators.python import PythonOperator
+from airflow.decorators import dag, task
+from airflow import DAG
+from typing import Mapping, Sequence
+from textwrap import dedent
+import logging
+import json
+import datetime
 import sys
 
 # sys.path.append("/Users/vsocrates/Documents/Yale/EDPipeline/ed-pipeline/src")
 sys.path.append("/home/jupyter/ed-data-pipeline/gitlab-repo/ed-pipeline/src")
 
-import datetime
-import json
 
 # import the logging module
-import logging
-from textwrap import dedent
-from typing import Mapping, Sequence
 
-from airflow import DAG
-from airflow.decorators import dag, task
-from airflow.operators.python import PythonOperator
-from airflow.utils import dates
-from ed_pipeline.airflow_tools.tasks import common, demos_tasks, vitals_tasks
-from ed_pipeline.modules import vitals
 
 # get the airflow.task logger
 task_logger = logging.getLogger("airflow.task")
@@ -95,7 +95,8 @@ def demos_vitals_pull_dag(
     common.merge_data_by_path.override(task_id=f"main_data_merge")(
         "test",
         output_path,
-        [f"{output_path}/demos_data.parquet", f"{output_path}/vitals_data.parquet"],
+        [f"{output_path}/demos_data.parquet",
+            f"{output_path}/vitals_data.parquet"],
         "visit_occurrence_id",
         merge_method="left",
     )
@@ -103,7 +104,8 @@ def demos_vitals_pull_dag(
     common.merge_data_by_path.override(task_id=f"compare_data_merge")(
         "test",
         output_path,
-        [f"{output_path}/demos_comp_data.parquet", f"{output_path}/vitals_comp_data.parquet"],
+        [f"{output_path}/demos_comp_data.parquet",
+            f"{output_path}/vitals_comp_data.parquet"],
         "visit_occurrence_id",
         merge_method="left",
     )

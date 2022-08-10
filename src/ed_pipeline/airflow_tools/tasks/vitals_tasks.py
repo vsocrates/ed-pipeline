@@ -35,8 +35,10 @@ def vitals_pull_task(
         vitals_data,
         comp_data,
     ) = vitals.ed_vitals_pull(spark, base_url, vitals_codes, rand_sample_size)
-    vitals_data.write.mode("overwrite").parquet(f"{output_path}/vitals_data.parquet")
-    comp_data.write.mode("overwrite").parquet(f"{output_path}/vitals_comp_data.parquet")
+    vitals_data.write.mode("overwrite").parquet(
+        f"{output_path}/vitals_data.parquet")
+    comp_data.write.mode("overwrite").parquet(
+        f"{output_path}/vitals_comp_data.parquet")
     # spark.stop()
 
     # return {"main":vitals_data, "comp":comp_data}

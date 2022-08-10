@@ -83,7 +83,8 @@ def demographic_pull(
     task_logger.critical("This log shows a critical error!")
 
     if group_value not in ["visit_occurrence_id", "person_id"]:
-        raise BaseException("Invalid group_value. Options are visit_occurrence_id and person_id")
+        raise BaseException(
+            "Invalid group_value. Options are visit_occurrence_id and person_id")
 
     visit_occurrence = helpful_functions.merge_files(
         f"{base_url}/visit_occurrence", spark, show=False
@@ -94,15 +95,18 @@ def demographic_pull(
         "visit_start_datetime",
         "visit_end_datetime",
     ]
-    visit_length = visit_occurrence.select([col for col in visit_length_columns])
+    visit_length = visit_occurrence.select(
+        [col for col in visit_length_columns])
     visit_length = visit_length.withColumn(
         "visit_length",
-        col("visit_end_datetime").cast("long") - col("visit_start_datetime").cast("long"),
+        col("visit_end_datetime").cast("long") -
+        col("visit_start_datetime").cast("long"),
     )
 
     print("Visit Data Loaded...")
 
-    person = helpful_functions.merge_files(f"{base_url}/person", spark, show=False)
+    person = helpful_functions.merge_files(
+        f"{base_url}/person", spark, show=False)
     demographics_cols = [
         "person_id",
         "birth_datetime",
@@ -129,12 +133,14 @@ def demographic_pull(
     ]
     insurance_df = payer_plan_period.select([col for col in insurance_columns])
     insurance_df = insurance_df.withColumn(
-        "payer_plan_period_start_datetime", to_date("payer_plan_period_start_date")
+        "payer_plan_period_start_datetime", to_date(
+            "payer_plan_period_start_date")
     ).withColumn("payer_plan_period_end_datetime", to_date("payer_plan_period_end_date"))
 
     print("Insurance Data Loaded...")
     task_logger.critical("Insurance Data Loaded...")
-    care_site_df = helpful_functions.merge_files(f"{base_url}/care_site", spark, show=False)
+    care_site_df = helpful_functions.merge_files(
+        f"{base_url}/care_site", spark, show=False)
     care_site_columns = [
         "care_site_id",
         "care_site_name",
@@ -145,8 +151,10 @@ def demographic_pull(
 
     print("Care Site Data Loaded...")
 
-    location = helpful_functions.merge_files(f"{base_url}/location", spark, show=False)
-    location_columns = ["location_id", "address_1", "city", "state", "zip", "county", "country"]
+    location = helpful_functions.merge_files(
+        f"{base_url}/location", spark, show=False)
+    location_columns = ["location_id", "address_1",
+                        "city", "state", "zip", "county", "country"]
     location = location.select([col for col in location_columns])
 
     print("Patient Locaiton Data Loaded...")
@@ -156,17 +164,20 @@ def demographic_pull(
             visit_length, insurance_df.person_id == visit_length.person_id
         )
         insurance_df = insurance_df.where(
-            (insurance_df.visit_start_datetime >= insurance_df.payer_plan_period_start_datetime)
+            (insurance_df.visit_start_datetime >=
+             insurance_df.payer_plan_period_start_datetime)
             & (insurance_df.visit_end_datetime <= insurance_df.payer_plan_period_end_datetime)
         )
         insurance_df = insurance_df.distinct()
-        insurance_columns = ["visit_occurrence_id", "payer_source_value", "plan_source_value"]
+        insurance_columns = ["visit_occurrence_id",
+                             "payer_source_value", "plan_source_value"]
         insurance_df = insurance_df.select([col for col in insurance_columns])
 
         demo = demo.join(visit_length, on="person_id", how="outer")
         demo = demo.withColumn(
             "age",
-            floor(datediff(col("visit_start_datetime"), col("birth_datetime")) / 365.25),
+            floor(datediff(col("visit_start_datetime"),
+                  col("birth_datetime")) / 365.25),
         )
         demo = demo.select(
             [
@@ -190,17 +201,20 @@ def demographic_pull(
 
     else:
         insurance_df = insurance_df.withColumn(
-            "payer_plan_period_start_datetime", to_date("payer_plan_period_start_date")
+            "payer_plan_period_start_datetime", to_date(
+                "payer_plan_period_start_date")
         ).withColumn("payer_plan_period_end_datetime", to_date("payer_plan_period_end_date"))
 
         insurance_df = insurance_df.join(
             insurance_df.groupBy("person_id").agg(
-                F.max("payer_plan_period_start_datetime").alias("payer_plan_period_start_datetime")
+                F.max("payer_plan_period_start_datetime").alias(
+                    "payer_plan_period_start_datetime")
             ),
             on="payer_plan_period_start_datetime",
             how="leftsemi",
         )
-        insurance_columns = ["person_id", "payer_source_value", "plan_source_value"]
+        insurance_columns = ["person_id",
+                             "payer_source_value", "plan_source_value"]
         insurance_df = insurance_df.select([col for col in insurance_columns])
 
         now = datetime.datetime.now()
@@ -233,7 +247,8 @@ def demographic_pull(
 
     main_df = demo.join(visit_length, on="person_id", how="outer")
     print("Demographics and Visit Length Information Combined...")
-    task_logger.critical("Demographics and Visit Length Information Combined...")
+    task_logger.critical(
+        "Demographics and Visit Length Information Combined...")
     main_df = main_df.join(insurance_df, on=group_value, how="outer")
     print("Added Insurance Information Information...")
 
@@ -255,19 +270,23 @@ def demographic_pull(
         print("Filtered Data for Age...")
 
     if gender != []:
-        main_df = catagorical_column_selection(main_df, "gender_source_value", gender)
+        main_df = catagorical_column_selection(
+            main_df, "gender_source_value", gender)
         print("Filtered Data for Gender...")
 
     if race != []:
-        main_df = catagorical_column_selection(main_df, "race_source_value", race)
+        main_df = catagorical_column_selection(
+            main_df, "race_source_value", race)
         print("Filtered Data for Race...")
 
     if ethnicity != []:
-        main_df = catagorical_column_selection(main_df, "ethnicity_source_value", ethnicity)
+        main_df = catagorical_column_selection(
+            main_df, "ethnicity_source_value", ethnicity)
         print("Filtered Data for Ethnicity...")
 
     if insurance != []:
-        main_df = catagorical_column_selection(main_df, "plan_source_value", insurance)
+        main_df = catagorical_column_selection(
+            main_df, "plan_source_value", insurance)
         print("Filtered Data for Insurance...")
 
     if visit_date != []:
@@ -276,12 +295,14 @@ def demographic_pull(
 
     if visit_location != {}:
         for key in visit_location.keys():
-            main_df = catagorical_column_selection(main_df, key, visit_location[key])
+            main_df = catagorical_column_selection(
+                main_df, key, visit_location[key])
         print("Filtered Data for Care Site...")
 
     if care_site != {}:
         for key in care_site.keys():
-            main_df = catagorical_column_selection(main_df, key, care_site[key])
+            main_df = catagorical_column_selection(
+                main_df, key, care_site[key])
         print("Filtered Data for Location...")
     task_logger.critical("Done!")
 

@@ -50,7 +50,8 @@ def merge_data_by_path(
         df = merge_files(df_path, spark, show=False)
         merged_out = merged_out.join(df, on=merge_on, how=merge_method)
 
-    merged_out.write.mode("overwrite").parquet(f"{output_path}/{task_id}.parquet")
+    merged_out.write.mode("overwrite").parquet(
+        f"{output_path}/{task_id}.parquet")
     # spark.stop()
 
     # return merged_out

@@ -28,7 +28,6 @@ def ed_vitals_pull(
     ],
     rand_sample_size: int = 0,
 ) -> Tuple[sql.DataFrame, sql.DataFrame]:
-
     """Extracts ED Vitals from OMOP dataset.
 
     Inputs a number of criteria for vitals and outputs two pyspark DataFrames,
@@ -48,7 +47,8 @@ def ed_vitals_pull(
 
     measurement = merge_files(f"{base_url}/measurement", spark, show=False)
     concept = merge_files(f"{base_url}/concept", spark, show=False)
-    vitals = measurement.join(concept, measurement.measurement_concept_id == concept.concept_id)
+    vitals = measurement.join(
+        concept, measurement.measurement_concept_id == concept.concept_id)
     task_logger.critical("Read in files...")
 
     vitals = vitals.filter(col("concept_id").isin(vitals_codes))
@@ -77,7 +77,8 @@ def ed_vitals_pull(
     first_final = (
         vitals2.join(
             first_pd,
-            on=["visit_occurrence_id", "measurement_source_value", "measurement_datetime"],
+            on=["visit_occurrence_id", "measurement_source_value",
+                "measurement_datetime"],
             how="right",
         )
         .withColumnRenamed("value_as_number", "First_Value")
@@ -86,7 +87,8 @@ def ed_vitals_pull(
     last_final = (
         vitals2.join(
             last_pd,
-            on=["visit_occurrence_id", "measurement_source_value", "measurement_datetime"],
+            on=["visit_occurrence_id", "measurement_source_value",
+                "measurement_datetime"],
             how="right",
         )
         .withColumnRenamed("value_as_number", "Last_Value")
