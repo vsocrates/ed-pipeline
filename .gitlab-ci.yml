@@ -9,7 +9,7 @@ auto_format:
     - nox -s ${{ NOXSESSION }}
   parallel:
     matrix:
-      - NOXSESSION: ["fmt", "autolink"]
+      - NOXSESSION: ["fmt", "autolint"]
 
 quality:
   stage: test
