@@ -1,28 +1,27 @@
 image: python:3.9
 
-before_script:
-  - pip install -r requirements.txt
+# before_script:
+#   - pip install -r requirements.txt
 
 # build-job:
 #   stage: build
 #   script:
 #     - echo "This is a placeholder, while we work on this before pushing to pypy - Hello, $GITLAB_USER_LOGIN!"
 
-test-job1:
-  stage: test
-  script:
-    - echo "This job tests something"
+# test-job1:
+#   stage: test
+#   script:
+#     - echo "This job tests something"
 
-test-docs:
-  stage: test
-  script:
-  - mkdocs build --strict --verbose --site-dir test
-  artifacts:
-    paths:
-    - test
-  rules:
-    - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
-
+# test-docs:
+#   stage: test
+#   script:
+#   - mkdocs build --strict --verbose --site-dir test
+#   artifacts:
+#     paths:
+#     - test
+#   rules:
+#     - if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH
 
 pages:
   stage: deploy
