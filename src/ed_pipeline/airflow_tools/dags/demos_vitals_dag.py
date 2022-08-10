@@ -1,5 +1,6 @@
 import sys
-sys.path.append("/Users/vsocrates/Documents/Yale/EDPipeline/ed-pipeline/src")
+# sys.path.append("/Users/vsocrates/Documents/Yale/EDPipeline/ed-pipeline/src")
+sys.path.append("/home/jupyter/ed-data-pipeline/gitlab-repo/ed-pipeline/src")
 
 import json
 from typing import Mapping, Sequence
@@ -19,6 +20,12 @@ from ed_pipeline.airflow_tools.tasks import demos_tasks
 from ed_pipeline.airflow_tools.tasks import common
 from  ed_pipeline.airflow_tools.tasks import vitals_tasks
 
+# import the logging module
+import logging
+
+# get the airflow.task logger
+task_logger = logging.getLogger('airflow.task')
+
 """Definition of DAG to Extract Demos and Vitals.
 
 We will be using the Airflow 2.0 new TaskFlow API because it makes it significantly easier to pass data between tasks (Xcoms)
@@ -31,8 +38,9 @@ and define various parts of the dag. It also makes more sense to look at due to 
     tags=['ed_demo_vitals'],
 )
 def demos_vitals_pull_dag(base_url: str, 
+    output_path:str, 
     group_value: str,
-    age: Sequence[int] = [],
+    age: Sequence[int] = [30,50],
     gender: Sequence[str] = [],
     race: Sequence[str] = [],
     ethnicity: Sequence[str] = [],
@@ -40,7 +48,7 @@ def demos_vitals_pull_dag(base_url: str,
     visit_date: Sequence[datetime.datetime] = [],
     visit_location: Mapping[str, str] = {},
     care_site: Mapping[str, str] = {},
-    rand_sample_size: int = 0):
+    rand_sample_size: int = 100):
     """
     ### ED-Pipeline Demos + Vitals Pull
     This is a Airflow DAG that extracts demographics and vitals from the OMOP dataset, along with some 
@@ -49,6 +57,7 @@ def demos_vitals_pull_dag(base_url: str,
     It has the following required inputs:  
 
         base_url: base url of the OMOP dataset
+        output_path: intermediate output path of files
         group_value: group by either visits (visit_occurrence_id) or person (person_id)
 
     It also have the following optional "filtering" parameters: 
@@ -65,21 +74,24 @@ def demos_vitals_pull_dag(base_url: str,
 
     [here](https://airflow.apache.org/docs/apache-airflow/stable/tutorial_taskflow_api.html)
     """
-    spark = common.start_spark_session("test")
-    demos_paired_df = demos_tasks.demos_pull_task(spark, base_url, group_value,  age, gender,  race,  ethnicity,  insurance,  
+    # spark = common.start_spark_session("test")
+    demos_tasks.demos_pull_task("test", base_url, output_path, group_value,  age, gender,  race,  ethnicity,  insurance,  
         visit_date,  visit_location,  care_site,  rand_sample_size)
 
-    vitals_paired_df = vitals_tasks.vitals_pull_task(spark, base_url)
+    vitals_tasks.vitals_pull_task("test", base_url, output_path)
 
-    main_merged = common.merge_data_pull.override(task_id=f"main_data_merge")([demos_paired_df['main'], vitals_paired_df['main']],
+    common.merge_data_by_path.override(task_id=f"main_data_merge")("test", output_path, [f"{output_path}/demos_data.parquet", f"{output_path}/vitals_data.parquet"],
         "visit_occurrence_id", merge_method="left")
 
-    comp_merged = common.merge_data_pull.override(task_id=f"compare_data_merge")([demos_paired_df['comp'], vitals_paired_df['comp']],
+    common.merge_data_by_path.override(task_id=f"compare_data_merge")("test", output_path, [f"{output_path}/demos_comp_data.parquet", f"{output_path}/vitals_comp_data.parquet"],
         "visit_occurrence_id", merge_method="left")
 
-    print(main_merged['return_value'])
-    print(comp_merged['return_value'])
+    # main_merged.write.parquet(f"{output_path}/final_main_df.parquet") 
+    # comp_merged.write.parquet(f"{output_path}/final_comp_df.parquet")     
+    
+    # print(main_merged['return_value'])
+    # print(comp_merged['return_value'])
 
 
-demos_vitals_pull = demos_vitals_pull_dag("/home/jupyter/omop-ed-datapipeline", "visit_occurrence_id")
+demos_vitals_pull_dag = demos_vitals_pull_dag("/home/jupyter/omop-ed-datapipeline", "/home/jupyter/omop-ed-datapipeline", "visit_occurrence_id")
 
