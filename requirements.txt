@@ -71,3 +71,4 @@ virtualenv==20.15.1
 watchdog==2.1.9
 zipp==3.8.0
 autopep8
+autoflake
