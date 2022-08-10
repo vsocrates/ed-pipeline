@@ -13,7 +13,7 @@ spark = SparkSession.builder.getOrCreate()
 spark.sparkContext.addPyFile("/home/cdsw/modules.zip")
 
 try:
-    from cchlib import schematic
+    pass
 except ImportError:
     raise ImportError("Error importing cchlib module. Run build.py first")
 

@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
 import colorama
-from dags import *
 from modules import demos
 from pyspark import SparkConf
 from src.ed_pipeline.modules import demos
-from src.ed_pipeline.qc import quality_checks
-from src.ed_pipeline.utils import helper_variables, helpful_functions
+from src.ed_pipeline.utils import helpful_functions
 import typer
 from typer import Argument
 

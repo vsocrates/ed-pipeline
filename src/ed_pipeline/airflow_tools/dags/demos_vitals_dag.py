@@ -1,13 +1,8 @@
-from ed_pipeline.modules import vitals
 from ed_pipeline.airflow_tools.tasks import common, demos_tasks, vitals_tasks
 from airflow.utils import dates
-from airflow.operators.python import PythonOperator
-from airflow.decorators import dag, task
-from airflow import DAG
+from airflow.decorators import dag
 from typing import Mapping, Sequence
-from textwrap import dedent
 import logging
-import json
 import datetime
 import sys
 

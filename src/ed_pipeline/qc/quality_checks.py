@@ -1,12 +1,9 @@
-import datetime
-import sys
-import time
 from typing import List, Mapping
 
 from pyspark import sql
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
-from pyspark.sql.types import IntegerType, StringType, StructField, StructType
+from pyspark.sql.types import StringType, StructField, StructType
 
 
 def get_null_perc(spark: SparkSession, df: sql.DataFrame, null_cols: List[str]) -> sql.DataFrame:

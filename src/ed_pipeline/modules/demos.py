@@ -2,7 +2,6 @@ import datetime
 
 # import the logging module
 import logging
-from os import walk
 from typing import Mapping, Sequence, Tuple
 
 from ed_pipeline.utils import helpful_functions

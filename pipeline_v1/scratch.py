@@ -3,13 +3,6 @@
 import os
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, concat, datediff, desc, explode, first, length, lit, lower
-from pyspark.sql.functions import max as spark_max
-from pyspark.sql.functions import min
-from pyspark.sql.functions import min as spark_min
-from pyspark.sql.functions import regexp_replace
-from pyspark.sql.functions import round as spark_round
-from pyspark.sql.functions import split, substring, trim, unix_timestamp, upper, when
 
 # %%
 # Set PYSPARK_PYTHON

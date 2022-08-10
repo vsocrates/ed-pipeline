@@ -1,11 +1,10 @@
 import datetime
 from typing import Dict, Mapping, Sequence
 
-from airflow.decorators import dag, task
+from airflow.decorators import task
 from ed_pipeline.modules import demos
 from ed_pipeline.utils.helpful_functions import get_spark_session
 from pyspark import SparkConf, sql
-from pyspark.sql import SparkSession
 
 # Generate 5 sleeping tasks, sleeping from 0.0 to 0.4 seconds respectively
 

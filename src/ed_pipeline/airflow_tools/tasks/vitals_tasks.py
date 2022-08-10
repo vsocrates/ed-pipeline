@@ -1,11 +1,9 @@
-import datetime
-from typing import Dict, List, Mapping, Sequence
+from typing import Dict, List
 
-from airflow.decorators import dag, task
+from airflow.decorators import task
 from ed_pipeline.modules import vitals
 from ed_pipeline.utils.helpful_functions import get_spark_session
 from pyspark import SparkConf, sql
-from pyspark.sql import SparkSession
 
 
 @task()

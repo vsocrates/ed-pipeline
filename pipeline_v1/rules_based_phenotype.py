@@ -1,37 +1,21 @@
 import copy
-import datetime
-from distutils import util
 import json
 import os
-import pickle
 import re
 
-from imblearn.over_sampling import SMOTE, SMOTENC
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy import set_printoptions
 import pandas as pd
-from pandas import read_csv
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 from pyspark.sql.functions import (
-    coalesce,
     col,
-    concat,
     lit,
-    lower,
-    regexp_replace,
     substring,
-    to_date,
-    trim,
     upper,
     when,
 )
-import sklearn
 from sklearn.calibration import CalibratedClassifierCV, calibration_curve
-from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
-from sklearn.feature_selection import RFE, SelectKBest, chi2, f_classif
-from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     auc,
@@ -44,10 +28,7 @@ from sklearn.metrics import (
     roc_curve,
 )
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.preprocessing import Normalizer, StandardScaler
-from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier, plot_tree
-import xgboost as xgb
 
 opioid_phenotyping_omop = {
     "care_site": "/projects/cch/opioid-phenotyping/data/raw/omop/care_site",
@@ -383,7 +364,6 @@ def get_best_features(num_feats):
 
         # Shap
         import shap
-        import xgboost
 
         # create a train/test split
         model = XGBClassifier(n_estimators=1000)
@@ -740,7 +720,7 @@ if __name__ == "__main__":
     spark.sparkContext.addPyFile("/home/cdsw/modules.zip")
 
     try:
-        from cchlib import copymerge
+        pass
     except ImportError:
         raise ImportError("Error importing cchlib module. Run build.py first")
     spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
