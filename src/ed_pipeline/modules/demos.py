@@ -1,20 +1,18 @@
 import datetime
-from os import walk
-from typing import Mapping, Sequence, Tuple
-
-from pyspark import sql
-from pyspark.sql import SparkSession
-from pyspark.sql import functions as F
-from pyspark.sql.functions import col, datediff, lit, to_date, when, floor
-from ed_pipeline.utils import helpful_functions
-
 
 # import the logging module
 import logging
+from os import walk
+from typing import Mapping, Sequence, Tuple
+
+from ed_pipeline.utils import helpful_functions
+from pyspark import sql
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+from pyspark.sql.functions import col, datediff, floor, lit, to_date, when
 
 # get the airflow.task logger
-task_logger = logging.getLogger('airflow.task')
-
+task_logger = logging.getLogger("airflow.task")
 
 
 def numerical_column_selection(
@@ -82,7 +80,7 @@ def demographic_pull(
     Returns:
         A tuple of the full data and the randomly subsetted data (full, subset)
     """
-    task_logger.critical('This log shows a critical error!')
+    task_logger.critical("This log shows a critical error!")
 
     if group_value not in ["visit_occurrence_id", "person_id"]:
         raise BaseException("Invalid group_value. Options are visit_occurrence_id and person_id")
@@ -211,9 +209,7 @@ def demographic_pull(
             when(
                 col("death_datetime").isNull(),
                 floor(datediff(lit(now), col("birth_datetime")) / 365.25),
-            ).otherwise(
-                floor(datediff(col("death_datetime"), col("birth_datetime")) / 365.25)
-            ),
+            ).otherwise(floor(datediff(col("death_datetime"), col("birth_datetime")) / 365.25)),
         )
         demo = demo.select(
             [
@@ -247,7 +243,7 @@ def demographic_pull(
     main_df = main_df.join(location, on="location_id", how="outer")
     print("Added Patient Locaiton Information...")
     task_logger.critical("Added Patient Locaiton Information...")
-    
+
     if rand_sample_size == 0:
         patient_number = main_df.count()
         rand_df = main_df.limit(patient_number)

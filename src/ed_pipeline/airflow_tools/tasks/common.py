@@ -1,19 +1,13 @@
-from typing import Sequence
-from airflow.decorators import task
-from pyspark import SparkConf
-
-from ed_pipeline.utils.helpful_functions import get_spark_session
-from pyspark import sql
-
-from ed_pipeline.utils.helpful_functions import merge_files
-from ed_pipeline.utils.helpful_functions import get_spark_session
-
-
 # import the logging module
 import logging
+from typing import Sequence
+
+from airflow.decorators import task
+from ed_pipeline.utils.helpful_functions import get_spark_session, merge_files
+from pyspark import SparkConf, sql
 
 # get the airflow.task logger
-task_logger = logging.getLogger('airflow.task')
+task_logger = logging.getLogger("airflow.task")
 
 
 # @task()
@@ -22,6 +16,7 @@ task_logger = logging.getLogger('airflow.task')
 #     spark = get_spark_session(app_name, SparkConf())
 #     task_logger.critical('This log shows a critical error!')
 #     return spark
+
 
 @task()
 def merge_data_pull(df_list: Sequence[sql.DataFrame], merge_on: str, merge_method: str = "left"):
@@ -35,16 +30,22 @@ def merge_data_pull(df_list: Sequence[sql.DataFrame], merge_on: str, merge_metho
     return merged_out
 
 
-    
 @task()
-def merge_data_by_path(spark_app_name: str, output_path: str, df_list: Sequence[str], merge_on: str, merge_method: str = "left"):
-    '''We assume the df_list is a list of paths to parquet files
-    '''    
+def merge_data_by_path(
+    spark_app_name: str,
+    output_path: str,
+    df_list: Sequence[str],
+    merge_on: str,
+    merge_method: str = "left",
+):
+    """We assume the df_list is a list of paths to parquet files"""
     spark = get_spark_session(spark_app_name, SparkConf())
-    
+
     merged_out = None
     first_df = merge_files(df_list[0], spark, show=False)
-    merged_out = first_df.join(merge_files(df_list[1], spark, show=False), on=merge_on, how=merge_method)
+    merged_out = first_df.join(
+        merge_files(df_list[1], spark, show=False), on=merge_on, how=merge_method
+    )
     for df_path in df_list[2:]:
         df = merge_files(df_path, spark, show=False)
         merged_out = merged_out.join(df, on=merge_on, how=merge_method)
