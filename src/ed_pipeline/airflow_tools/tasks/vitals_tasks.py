@@ -6,12 +6,15 @@ from ed_pipeline.modules import vitals
 from pyspark.sql import SparkSession
 from pyspark import sql 
 
-# Generate 5 sleeping tasks, sleeping from 0.0 to 0.4 seconds respectively
+from pyspark import SparkConf
+
+from ed_pipeline.utils.helpful_functions import get_spark_session
 
 @task()
 def vitals_pull_task(
-    spark: SparkSession,
+    spark_app_name: str,
     base_url: str,
+    output_path: str,    
     vitals_codes: List[int] = [
         3025315,
         3012888,
@@ -28,6 +31,11 @@ def vitals_pull_task(
 ) -> Dict[str, sql.DataFrame]:
     """This is a function that will run within the DAG execution"""
     
-    vitals_data, comp_data, = vitals.ed_vitals_pull(spark, base_url, vitals_codes, rand_sample_size, merge_with=merge_with)
-
-    return {"main":vitals_data, "comp":comp_data}
+    spark = get_spark_session(spark_app_name, SparkConf())
+    
+    vitals_data, comp_data, = vitals.ed_vitals_pull(spark, base_url, vitals_codes, rand_sample_size)
+    vitals_data.write.mode("overwrite").parquet(f"{output_path}/vitals_data.parquet") 
+    comp_data.write.mode("overwrite").parquet(f"{output_path}/vitals_comp_data.parquet")     
+    # spark.stop()
+    
+    # return {"main":vitals_data, "comp":comp_data}
