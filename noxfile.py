@@ -46,6 +46,14 @@ def lint(s: Session) -> None:
 
 
 @session(venv_backend="none")
+def autolint(s: Session) -> None:
+    # Auto PEP-8 cleanup and use autoflake to remove unused imports
+    s.run("autopep8", "--in-place", "--recursive", ".")
+    s.run("autoflake", "--in-place", "--recursive",
+          "--remove-all-unused-imports", ".")
+
+
+@session(venv_backend="none")
 def type_check(s: Session) -> None:
     s.run("mypy", "src", "tests", "noxfile.py")
 

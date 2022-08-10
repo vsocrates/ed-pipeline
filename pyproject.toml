@@ -100,6 +100,7 @@ extend-immutable-calls = ["Argument"]
 # TODO: Remove this once flake8 > 4.0.1 is released as this has been fixed
 #   upstream: https://github.com/PyCQA/flake8/pull/1443
 extend-exclude = [".nox"]
+exclude = ["docs","pipeline_v1"]
 
 [tool.black]
 line-length = 99

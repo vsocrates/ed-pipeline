@@ -1,17 +1,23 @@
 image: python:3.9
 
-# before_script:
-#   - pip install -r requirements.txt
+before_script:
+  - pip install -r requirements.txt
 
-# build-job:
-#   stage: build
-#   script:
-#     - echo "This is a placeholder, while we work on this before pushing to pypy - Hello, $GITLAB_USER_LOGIN!"
+auto_format:
+  stage: build
+  script:
+    - nox -s ${{ NOXSESSION }}
+  parallel:
+    matrix:
+      - NOXSESSION: ["fmt", "autolink"]
 
-# test-job1:
-#   stage: test
-#   script:
-#     - echo "This job tests something"
+quality:
+  stage: test
+  script:
+    - nox -s ${{ NOXSESSION }}
+  parallel:
+    matrix:
+      - NOXSESSION: [ "fmt_check", "lint", "type_check", "docs" ]
 
 # test-docs:
 #   stage: test
@@ -25,8 +31,6 @@ image: python:3.9
 
 pages:
   stage: deploy
-  before_script:
-    - pip install -r requirements.txt
   script:
   - mkdocs build --strict --verbose
   - mv site public  
